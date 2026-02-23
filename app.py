@@ -13,14 +13,16 @@ st.set_page_config(
     layout="wide",
 )
 NUM_COLS = ["tenure", "MonthlyCharges", "TotalCharges"]
-ARTIFACTS = ["model.pkl", "scaler.pkl", "feature_columns.pkl", "num_cols.pkl"]
+ARTIFACTS = ["model_pipeline.pkl", "feature_columns.pkl"]
 
 
 def train_and_save():
+    from sklearn.compose import ColumnTransformer
     from sklearn.linear_model import LogisticRegression
     from sklearn.metrics import accuracy_score
     from sklearn.model_selection import train_test_split
-    from sklearn.preprocessing import StandardScaler
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
     df = pd.read_csv("telco_customer_churn.csv").drop(columns=["customerID"])
     df["TotalCharges"] = df["TotalCharges"].replace({" ": "0.0"}).astype(float)
@@ -28,27 +30,33 @@ def train_and_save():
 
     X = df.drop(columns=["Churn"])
     y = df["Churn"]
-    cat_cols = X.select_dtypes(include=["object"]).columns
-    X = pd.get_dummies(X, columns=cat_cols, drop_first=True)
+    
     feature_columns = X.columns.tolist()
+    cat_cols = X.select_dtypes(include=["object"]).columns.tolist()
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
     )
-    scaler = StandardScaler()
-    X_train[NUM_COLS] = scaler.fit_transform(X_train[NUM_COLS])
-    X_test[NUM_COLS] = scaler.transform(X_test[NUM_COLS])
 
-    model = LogisticRegression(max_iter=1000, random_state=42)
-    model.fit(X_train, y_train)
-    accuracy = accuracy_score(y_test, model.predict(X_test))
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("num", StandardScaler(), NUM_COLS),
+            ("cat", OneHotEncoder(handle_unknown="ignore", drop="first"), cat_cols)
+        ])
+
+    pipeline = Pipeline(steps=[
+        ("preprocessor", preprocessor),
+        ("classifier", LogisticRegression(max_iter=1000, random_state=42))
+    ])
+
+    pipeline.fit(X_train, y_train)
+    accuracy = accuracy_score(y_test, pipeline.predict(X_test))
 
     # Save artifacts
-    joblib.dump(model, "model.pkl")
-    joblib.dump(scaler, "scaler.pkl")
+    joblib.dump(pipeline, "model_pipeline.pkl")
     joblib.dump(feature_columns, "feature_columns.pkl")
-    joblib.dump(NUM_COLS, "num_cols.pkl")
     return accuracy
+
 
 
 if not all(os.path.exists(f) for f in ARTIFACTS):
@@ -59,10 +67,9 @@ if not all(os.path.exists(f) for f in ARTIFACTS):
 
 @st.cache_resource
 def load_artifacts():
-    model = joblib.load("model.pkl")
-    scaler = joblib.load("scaler.pkl")
+    pipeline = joblib.load("model_pipeline.pkl")
     feature_columns = joblib.load("feature_columns.pkl")
-    return model, scaler, feature_columns
+    return pipeline, feature_columns
 
 
 @st.cache_data
@@ -72,11 +79,10 @@ def load_data():
     return df
 
 
-model, scaler, feature_columns = load_artifacts()
+pipeline, feature_columns = load_artifacts()
 df = load_data()
 
-st.title("Telco Customer Churn Dashboard")
-st.caption("Explore customer data and predict churn with Logistic Regression.")
+st.title("Telco Churn")
 tab1, tab2 = st.tabs(["Data Overview", "Predict Churn"])
 
 
@@ -291,16 +297,10 @@ with tab2:
         }
 
         input_df = pd.DataFrame([input_data])
+        input_df = input_df.reindex(columns=feature_columns, fill_value=0)
 
-        cat_cols_input = input_df.select_dtypes(include=["object"]).columns
-        input_encoded = pd.get_dummies(
-            input_df, columns=cat_cols_input, drop_first=True
-        )
-        input_encoded = input_encoded.reindex(columns=feature_columns, fill_value=0)
-
-        input_encoded[NUM_COLS] = scaler.transform(input_encoded[NUM_COLS])
-        prediction = model.predict(input_encoded)[0]
-        proba = model.predict_proba(input_encoded)[0]
+        prediction = pipeline.predict(input_df)[0]
+        proba = pipeline.predict_proba(input_df)[0]
         churn_prob = proba[1] * 100
         stay_prob = proba[0] * 100
 
@@ -311,13 +311,11 @@ with tab2:
 
         with r1:
             if prediction == 1:
-                st.error("**High Churn Risk**")
-                st.metric("Churn Probability", f"{churn_prob:.1f}%")
-                st.caption("This customer is likely to leave.")
+                st.error("High Risk of Churn")
+                st.write(f"Probability: {churn_prob:.1f}%")
             else:
-                st.success("**Low Churn Risk**")
-                st.metric("Retention Probability", f"{stay_prob:.1f}%")
-                st.caption("This customer is likely to stay.")
+                st.success("Likely to Stay")
+                st.write(f"Probability: {stay_prob:.1f}%")
 
         with r2:
             fig, ax = plt.subplots(figsize=(6, 2))
