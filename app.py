@@ -16,10 +16,11 @@ NUM_COLS = ["tenure", "MonthlyCharges", "TotalCharges"]
 
 @st.cache_resource(show_spinner="First run — training model, please wait...")
 def train_model():
+    from imblearn.over_sampling import SMOTE
+    from imblearn.pipeline import Pipeline
     from sklearn.compose import ColumnTransformer
     from sklearn.linear_model import LogisticRegression
     from sklearn.model_selection import train_test_split
-    from sklearn.pipeline import Pipeline
     from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
     df = pd.read_csv("telco_customer_churn.csv").drop(columns=["customerID"])
@@ -44,6 +45,7 @@ def train_model():
 
     pipeline = Pipeline(steps=[
         ("preprocessor", preprocessor),
+        ("smote", SMOTE(random_state=42)),
         ("classifier", LogisticRegression(max_iter=1000, random_state=42))
     ])
 
