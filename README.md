@@ -28,7 +28,6 @@ graph TD
     D --> F[Model Training]
     E --> F
     F -->|Logistic Regression| G[Model Evaluation]
-    F -->|Decision Tree| G
     G --> H[Select Best Model]
     H --> I[Streamlit UI App]
 
@@ -39,7 +38,7 @@ graph TD
 
 ### 4. Model Performance Evaluation Report
 
-Both Logistic Regression and Decision Tree models were trained and evaluated on a 20% test split.
+The Logistic Regression and XGBoost models were trained and evaluated on a 20% test split.
 
 **Logistic Regression Performance (Best Model):**
 
@@ -47,9 +46,7 @@ Both Logistic Regression and Decision Tree models were trained and evaluated on 
 - **Precision**: 0.68
 - **Recall**: 0.58
 - **F1-Score**: 0.63
-- The Logistic Regression generalized better to unseen data without massive overfitting compared to the unpruned decision tree.
 
-**Decision Tree Component Performance:**
 
 - **Accuracy**: ~73%
 - **Precision**: 0.50
