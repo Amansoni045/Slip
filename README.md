@@ -9,3 +9,15 @@ We worked with the **Telco Customer Churn** dataset, which captures real world c
 **Milestone 1** focuses on classical machine learning. We used techniques like Logistic Regression along with thoughtful feature engineering to build a churn prediction pipeline. The results are served through a clean, interactive Streamlit dashboard where users can explore the data visually and even test predictions for individual customers.
 
 **Milestone 2** takes things further by introducing an agent based AI layer. The idea here is to move beyond just predicting churn and actually reason about it. Using frameworks like LangGraph and retrieval augmented generation (RAG), the system will pull in retention best practices and generate structured intervention plans tailored to each customer's situation.
+
+---
+
+### Constraints & Requirements
+
+This project was built within a set of guidelines to keep things fair, consistent, and accessible for everyone on the team.
+
+We worked as a team of **3 to 4 students**, collaborating across data exploration, model building, UI development, and documentation. Everything was built using **free tier tools only**, meaning we stuck to open source models and APIs that don't require paid subscriptions. No hidden costs, no premium keys.
+
+For the agent based components in Milestone 2, **LangGraph** is the recommended framework. It gives us the flexibility to define agent workflows with clean state management and tool integration.
+
+One important rule: the final version of the project **must be hosted and publicly accessible**. A localhost only demo won't be accepted for the end semester submission. We're expected to deploy using platforms like **Hugging Face Spaces**, **Streamlit Cloud**, or **Render** so that anyone with the link can try it out.
