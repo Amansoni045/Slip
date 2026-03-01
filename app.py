@@ -472,3 +472,23 @@ with tab2:
         plt.tight_layout()
         st.pyplot(fig)
         plt.close()
+
+        st.divider()
+        st.subheader("Export Results")
+        
+        # Prepare data for download
+        export_data = input_data.copy()
+        export_data["Prediction_Churn"] = "Yes" if prediction == 1 else "No"
+        export_data["Churn_Probability"] = f"{churn_prob:.1f}%"
+        export_data["Stay_Probability"] = f"{stay_prob:.1f}%"
+        
+        export_df = pd.DataFrame([export_data])
+        csv_data = export_df.to_csv(index=False).encode('utf-8')
+        
+        st.download_button(
+            label="Download Prediction as CSV",
+            data=csv_data,
+            file_name="churn_prediction_result.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
