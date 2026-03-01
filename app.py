@@ -406,3 +406,69 @@ with tab2:
             plt.tight_layout()
             st.pyplot(fig)
             plt.close()
+
+        st.divider()
+        st.subheader("Customer Insights & Recommendations")
+        
+        c1, c2 = st.columns(2)
+        
+        with c1:
+            st.markdown("##### Key Risk Factors")
+            factors = []
+            if contract == "Month-to-month":
+                factors.append("⚠️ **Month-to-month contract** users have the highest churn rate.")
+            if internet_service == "Fiber optic":
+                factors.append("⚠️ **Fiber optic** service has higher than average churn.")
+            if tech_support == "No":
+                factors.append("⚠️ **Lack of Tech Support** is a strong predictor of churn.")
+            if tenure < 12:
+                factors.append("⚠️ **Low Tenure** (< 1 year) represents a critical risk period.")
+                
+            if not factors:
+                st.success("✅ Customer profile does not exhibit common churn risk factors.")
+            else:
+                for f in factors:
+                    st.markdown(f)
+                    
+        with c2:
+            st.markdown("##### Recommended Actions")
+            if prediction == 1:
+                st.markdown("- **Offer a Discount**: Provide a 10-20% discount to switch to a 1-year contract.")
+                if tech_support == "No":
+                    st.markdown("- **Value Add**: Offer 3 months of free Premium Tech Support.")
+                if internet_service == "Fiber optic":
+                    st.markdown("- **Service Check**: Trigger a proactive customer service call to ensure fiber optic network stability.")
+            else:
+                st.markdown("- **Upsell Opportunity**: Customer is stable. Consider offering hardware upgrades or additional streaming services.")
+                st.markdown("- **Loyalty Reward**: Send a thank-you email offering a referral bonus.")
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("##### Customer vs Average Metrics")
+        fig, ax = plt.subplots(figsize=(8, 3))
+        fig.patch.set_alpha(0.0)
+        ax.patch.set_alpha(0.0)
+        
+        metrics = ["Tenure (Months)", "Monthly Charges ($)"]
+        customer_vals = [tenure, monthly_charges]
+        avg_vals = [df["tenure"].mean(), df["MonthlyCharges"].mean()]
+        
+        x = np.arange(len(metrics))
+        width = 0.35
+        
+        rects1 = ax.bar(x - width/2, customer_vals, width, label='This Customer', color='#E8534A' if prediction == 1 else '#00d2ff', edgecolor='#ffffff33')
+        rects2 = ax.bar(x + width/2, avg_vals, width, label='Overall Average', color='#ffffff1a', edgecolor='#ffffff33')
+        
+        ax.set_ylabel('Value', color="#e2e8f0", fontsize=9)
+        ax.set_xticks(x)
+        ax.set_xticklabels(metrics, color="#e2e8f0", fontsize=9)
+        ax.tick_params(colors="#e2e8f0", which='both')
+        ax.legend(framealpha=0.1, labelcolor="#e2e8f0", fontsize=8)
+        ax.grid(True, linestyle='--', alpha=0.1, axis='y')
+        
+        ax.spines[["top", "right"]].set_visible(False)
+        for spine in ax.spines.values():
+            spine.set_color("#ffffff1a")
+            
+        plt.tight_layout()
+        st.pyplot(fig)
+        plt.close()
