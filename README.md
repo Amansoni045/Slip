@@ -1,10 +1,18 @@
-# Customer Churn Prediction & Retention Strategy
+# Customer Churn Prediction & Agentic Retention Strategy
+
+*From Predictive Analytics to Intelligent Intervention*
+
+## Project Overview
+
+Customer churn is one of the biggest challenges telecom companies face today. Losing a customer isn't just about one cancelled subscription; it snowballs into lost revenue, higher acquisition costs, and a weakened brand. This project tackles that problem head on by building an AI powered system that not only predicts which customers are likely to leave, but eventually evolves into an intelligent agent that can suggest personalized retention strategies.
+
+We worked with the Telco Customer Churn dataset, which captures real world customer behavior like how long they've been with the company, what services they use, how much they pay, and whether or not they ended up churning. The goal was to dig into this data, find meaningful patterns, and train a model that can flag at risk customers before it's too late.
+
+Milestone 1 focuses on classical machine learning. We used techniques like Logistic Regression along with thoughtful feature engineering to build a churn prediction pipeline. The results are served through a clean, interactive Streamlit dashboard where users can explore the data visually and even test predictions for individual customers.
+
+Milestone 2 takes things further by introducing an agent based AI layer. The idea here is to move beyond just predicting churn and actually reason about it. Using frameworks like LangGraph and retrieval augmented generation (RAG), the system will pull in retention best practices and generate structured intervention plans tailored to each customer's situation.
 
 ## Milestone 1: ML-Based Customer Churn Prediction
-
-### 1. Problem Understanding & Business Context
-
-Customer churn refers to the phenomenon where customers stop doing business with a company. For telecom businesses, retaining existing customers is often more cost-effective than acquiring new ones. The objective of this project is to develop a predictive analytics system that identifies customers at high risk of churning based on their historical behavioral and transactional data. By predicting churn probability early, the business can proactively design and apply intelligent intervention strategies, offering incentives or better support to retain those vulnerable customers.
 
 ### 2. Input-Output Specifications
 
@@ -46,8 +54,6 @@ The Logistic Regression and XGBoost models were trained and evaluated on a 20% t
 - **Precision**: 0.68
 - **Recall**: 0.58
 - **F1-Score**: 0.63
-
-
 - **Accuracy**: ~73%
 - **Precision**: 0.50
 - **Recall**: 0.49
