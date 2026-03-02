@@ -88,3 +88,26 @@ To tie all these technologies together, the project is structured around three m
 
 - **Purpose:** The Dependency Manager.
 - **Details:** A standardized text file documenting every external library (and its version constraints, if applicable) required to run this project. Running `pip install -r requirements.txt` reads this file and exactly replicates the technology stack environment on any new machine.
+
+---
+
+## Project Structure
+
+Here is a quick overview of the entire repository structure, so you know exactly where to find what you're looking for:
+
+```text
+.
+├── CONTRIBUTORS.md          # Team members and contribution guidelines
+├── Project 5_AI_ML.pdf      # Detailed university project report and presentation
+├── README.md                # Main entry point with project overview and goals
+├── SETUP_GUIDE.md           # Step-by-step instructions to clone and run the app
+├── TECH_STACK.md            # You are here! Details on weapons of choice
+├── app.py                   # The Streamlit web dashboard source code
+├── churn.ipynb              # The Jupyter notebook for EDA and model training
+├── customer_churn_model.pkl # Best trained model (XGBoost/LogReg) saved to disk
+├── encoders.pkl             # Serialized OneHotEncoders for robust categorical preprocessing
+├── feature_columns.pkl      # Expected dataframe columns for consistent model inference
+├── model_pipeline.pkl       # Full scikit-learn preprocessing and modeling pipeline
+├── requirements.txt         # Required Python library dependencies
+└── telco_customer_churn.csv # The raw dataset used for training
+```
