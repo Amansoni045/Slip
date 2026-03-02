@@ -45,6 +45,14 @@ For a deep dive into every library and why we chose it, check out our **[Technol
 
 ---
 
+### System Architecture
+
+Here is the high-level system design architecture for the agentic retention strategy pipeline:
+
+![System Architecture](docs/images/architecture.png)
+
+---
+
 ### Milestones & Deliverables
 
 #### Milestone 1: ML Based Churn Prediction (Mid Sem)
@@ -62,3 +70,9 @@ The goal here was to identify customers at risk of leaving using historical beha
 ### Setup and Installation
 
 Ready to run this project yourself? Check out our detailed **[Setup and Installation Guide](docs/SETUP_GUIDE.md)** for step by step instructions on how to clone the repository, install dependencies, and launch the Streamlit dashboard.
+
+---
+
+### Team
+
+Meet the core team and see how to get involved by visiting our **[Contributors Guide](docs/CONTRIBUTORS.md)**.
