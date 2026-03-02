@@ -88,7 +88,7 @@ ARTIFACTS = ["model_pipeline.pkl", "feature_columns.pkl"]
 
 if not all(os.path.exists(f) for f in ARTIFACTS):
     st.error("Model artifacts not found. Please run the notebook first to generate `model_pipeline.pkl` and `feature_columns.pkl`.", icon="⚠️")
-    st.info("The dashboard requires a trained model to function. Please execute `churn.ipynb` to train the Logistic Regression model.")
+    st.info("The dashboard requires a trained model to function. Please execute `churn.ipynb` to train the Random Forest model.")
     st.stop()
 
 @st.cache_resource
