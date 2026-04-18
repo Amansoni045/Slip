@@ -13,3 +13,9 @@ textColor = "#e2e8f0"
 
 # Font family for all text in the app
 font = "sans serif"
+
+[server]
+# Disabling the file watcher eliminates the 'No module named torchvision'
+# spam caused by Streamlit scanning every submodule in the transformers
+# package. The app does not use hot-reload-sensitive code, so this is safe.
+fileWatcherType = "none"
