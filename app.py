@@ -214,6 +214,21 @@ def render_home_page():
             unsafe_allow_html=True,
         )
 
+    vector_index_ready = any(
+        os.path.exists(path)
+        for path in [
+            "vectorstore/db_faiss/index.faiss",
+            "vectorstore/db_faiss/index 2.faiss",
+        ]
+    )
+    kb_ready = os.path.exists("knowledge_base/retention_strategies.md")
+
+    k1, k2, k3, k4 = st.columns(4)
+    k1.metric("Dataset Rows", f"{len(df):,}")
+    k2.metric("Model Features", f"{len(feature_columns)}")
+    k3.metric("Knowledge Base", "Ready" if kb_ready else "Missing")
+    k4.metric("Vector Index", "Ready" if vector_index_ready else "Missing")
+
     st.markdown("### Product Flow")
     st.markdown("1. Explore churn trends in the analytics dashboard.")
     st.markdown("2. Predict churn probability for any customer profile.")
