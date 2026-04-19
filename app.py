@@ -267,17 +267,51 @@ GREEN = "#34d399"
 # ── Artifacts / data ───────────────────────────────────────────────────────────
 import joblib
 
+
+# Auto-train and save model artifacts if missing
 ARTIFACTS = ["model_pipeline.pkl", "feature_columns.pkl"]
-if not all(os.path.exists(f) for f in ARTIFACTS):
-    st.error("Model artifacts not found. Run `churn.ipynb` first.")
-    st.info("The dashboard requires trained model artifacts to function.")
-    st.stop()
+def train_and_save_artifacts():
+    st.warning("Model artifacts not found. Training a new model. This may take a moment...")
+    df = pd.read_csv("telco_customer_churn.csv").drop(columns=["customerID"])
+    df["TotalCharges"] = df["TotalCharges"].replace({" ": "0.0"}).astype(float)
+    # Simple preprocessing and model for demonstration
+    from sklearn.model_selection import train_test_split
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler, LabelEncoder
+    import joblib
+    # Encode categorical columns
+    X = df.drop("Churn", axis=1)
+    y = df["Churn"].map({"Yes": 1, "No": 0})
+    for col in X.select_dtypes(include=["object"]).columns:
+        X[col] = LabelEncoder().fit_transform(X[col].astype(str))
+    feature_columns = X.columns.tolist()
+    X_train, _, y_train, _ = train_test_split(X, y, test_size=0.2, random_state=42)
+    pipeline = Pipeline([
+        ("scaler", StandardScaler()),
+        ("clf", RandomForestClassifier(n_estimators=50, random_state=42)),
+    ])
+    pipeline.fit(X_train, y_train)
+    joblib.dump(pipeline, "model_pipeline.pkl")
+    joblib.dump(feature_columns, "feature_columns.pkl")
+    st.success("Model artifacts trained and saved.")
+
+
+
+import pickle
 
 @st.cache_resource
 def load_artifacts():
-    pipeline       = joblib.load("model_pipeline.pkl")
-    feature_columns = joblib.load("feature_columns.pkl")
-    return pipeline, feature_columns
+    for _ in range(2):  # Try twice: first try, then retrain if needed
+        try:
+            pipeline = joblib.load("model_pipeline.pkl")
+            feature_columns = joblib.load("feature_columns.pkl")
+            return pipeline, feature_columns
+        except (EOFError, FileNotFoundError, pickle.UnpicklingError):
+            st.warning("Model artifacts missing or corrupted. Retraining...")
+            train_and_save_artifacts()
+    st.error("Failed to load or train model artifacts. Please check your data and code.")
+    st.stop()
 
 @st.cache_data
 def load_data():
@@ -391,6 +425,7 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
+
     selected = option_menu(
         menu_title=None,
         options=["Overview", "Churn Prediction", "AI Strategist", "Model Performance"],
@@ -408,7 +443,9 @@ with st.sidebar:
             "icon":           {"color": "#38bdf8"},
         },
     )
-    st.session_state.active_tab = selected
+    if selected != st.session_state.active_tab:
+        st.session_state.active_tab = selected
+        st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -567,7 +604,7 @@ if selected == "Overview":
         hovertemplate="%{x} × %{y}: %{z}<extra></extra>",
     ))
     apply_layout(fig, height=450, margin=dict(l=50, r=50, t=50, b=50))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.divider()
@@ -638,7 +675,7 @@ elif selected == "Churn Prediction":
                 streaming_movies  = st.selectbox("Streaming Movies", ["No", "Yes", "No internet service"])
 
         st.markdown("<br>", unsafe_allow_html=True)
-        submitted = st.form_submit_button("🚀 Run Churn Analysis", width='stretch', use_container_width=True)
+        submitted = st.form_submit_button("🚀 Run Churn Analysis", width='stretch')
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -748,7 +785,7 @@ elif selected == "Churn Prediction":
                 },
             ))
             apply_layout(fig, height=260, margin=dict(l=30, r=30, t=50, b=10))
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
 
         with col_bar:
             # Horizontal prob bar
@@ -763,7 +800,7 @@ elif selected == "Churn Prediction":
             ))
             apply_layout(fig2, height=260, xaxis=dict(showgrid=False, zeroline=False, range=[0, 100], showticklabels=False),
                          yaxis=dict(showgrid=False, zeroline=False))
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width='stretch')
         st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -1020,7 +1057,7 @@ elif selected == "Model Performance":
         
         apply_layout(fig_bench, height=300, showlegend=False)
         fig_bench.update_traces(textposition='inside', marker_line_width=0)
-        st.plotly_chart(fig_bench, use_container_width=True)
+        st.plotly_chart(fig_bench, width='stretch')
         
     with col_bench2:
         # Winner Card
