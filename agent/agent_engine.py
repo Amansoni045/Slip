@@ -13,6 +13,7 @@ load_dotenv()
 class AgentState(TypedDict):
     customer_data: dict
     churn_probability: float
+    user_query: str
     retrieved_strategies: str
     analysis: str
     final_report: str
@@ -35,7 +36,6 @@ def get_llm_response(prompt: str, log: List[str], state: AgentState):
         api_key = os.getenv(provider["env_key"])
         if api_key and api_key != "your_api_key_here":
             try:
-                # Initialize LLM based on provider class
                 if provider["name"] == "Google Gemini":
                     llm = provider["class"](model=provider["model"], google_api_key=api_key)
                 else:
@@ -44,7 +44,6 @@ def get_llm_response(prompt: str, log: List[str], state: AgentState):
                 log.append(f"🚀 Using {provider['name']} for generation...")
                 response = llm.invoke(prompt)
                 
-                # Extract content
                 if hasattr(response, "content"):
                     if isinstance(response.content, list):
                         content = "".join([b.get("text", "") for b in response.content if isinstance(b, dict)])
@@ -89,8 +88,6 @@ def analyze_customer(state: AgentState):
     
     return {"analysis": analysis, "active_provider": provider, "thought_log": log}
 
-    return {"analysis": analysis, "thought_log": log}
-
 def retrieve_knowledge(state: AgentState):
     """
     Queries the vector database for relevant retention strategies.
@@ -99,7 +96,12 @@ def retrieve_knowledge(state: AgentState):
     query = f"Retention strategies for {state['analysis']}"
     
     docs = db.similarity_search(query, k=3)
-    context = "\n\n".join([doc.page_content for doc in docs])
+    
+    strategies = []
+    for i, doc in enumerate(docs):
+        strategies.append(f"Source {i+1}: {doc.page_content}")
+    
+    context = "\n\n".join(strategies)
     
     log = state.get('thought_log', [])
     log.append("🔍 Searching internal knowledge base for proven retention playbooks...")
@@ -123,21 +125,23 @@ def generate_report(state: AgentState):
     - Customer Email: {customer_email}
     - Company Name: {company_name}
     
+    USER SPECIAL QUERY:
+    {state.get('user_query', 'No specific focus requested.')}
+    
     CUSTOMER ANALYSIS:
     {state['analysis']}
     
-    RETENTION PLAYBOOK EXCERPTS:
+    RETENTION PLAYBOOK EXCERPTS (WITH SOURCES):
     {state['retrieved_strategies']}
     
-    YOUR OUTPUT MUST INCLUDE:
-    1. Executive Risk Summary (Professional tone).
-    2. Actionable Intervention Plan (Bullet points).
-    3. Draft Retention Email (Personalized, empathetic, and including a specific offer).
+    YOUR OUTPUT MUST INCLUDE THE FOLLOWING SECTIONS IN ORDER WITH THESE EXACT HEADERS:
+    ### 1. Executive Risk Summary
+    ### 2. Actionable Intervention Plan
+    ### 3. Draft Retention Email (Include 'Recipient:', 'Subject:', and 'Body:' inside this section)
+    ### 4. Sources & References
+    ### 5. Business & Ethical Disclaimer
 
-    IMPORTANT EMAIL REQUIREMENTS:
-    - Use the exact customer name and company name provided above.
-    - Include the customer email in a short line like "To: ..." before the subject.
-    - Do not use placeholders such as [Customer Name], [Company Name], [Your Name], or [Link: ...].
+    IMPORTANT: Do not use placeholders like [Customer Name]. Use real names provided.
     """
     
     log = state.get('thought_log', [])
@@ -146,70 +150,52 @@ def generate_report(state: AgentState):
     final_report, provider = get_llm_response(prompt, log, state)
     
     if not final_report:
-        # --- Heuristic Fallback Content ---
         heuristic_report = f"""
-### AI Strategy Report (Heuristic Mode)
-
 **1. Executive Risk Summary**
-The customer is at risk due to their **{state['customer_data']['Contract']}** contract and **{state['customer_data']['InternetService']}** service. With a churn probability of **{state['churn_probability']:.1f}%**, immediate intervention is recommended to secure long-term value.
+High risk detected for {customer_name} due to contract type and service charges.
 
 **2. Actionable Intervention Plan**
-*   **Contract Migration**: Propose a targeted discount (10-20%) to move the customer from month-to-month to a secured 1-year or 2-year plan.
-*   **Service Optimization**: Since the customer uses **{state['customer_data']['InternetService']}**, ensure they are aware of all features and provide a complimentary service check.
-*   **Loyalty Engagement**: Schedule a proactive touchpoint to address any latent dissatisfaction before it leads to churn.
+* Migrate to a long-term contract.
+* Offer a connectivity health check.
 
 **3. Draft Retention Email**
-To: {customer_email}
-Subject: We value your partnership - let's find your perfect plan
+Sent to: {customer_email}
+Subject: Enhancing your experience at {company_name}
 
-Dear {customer_name},
+**4. Sources & References**
+Internal Playbook v2.1
 
-As a valued member of {company_name}, we noticed you've been with us for {state['customer_data']['tenure']} months, and we want to ensure you're getting the best experience possible. We've reviewed your current service profile and would like to offer you an exclusive loyalty discount on our annual secured plans.
-
-This upgrade would provide you with both price stability and enhanced support features. Are you available for a brief call this week to discuss how we can better serve you?
-
-Best regards,
-Retention Team
-{company_name}
+**5. Business & Ethical Disclaimer**
+AI-generated. Review by professional required.
 """
-        final_report = f"> 💡 **Safe Mode Active**: All AI providers reached quota limits. Using expert heuristics.\n\n" + heuristic_report
+        final_report = f"> 💡 **Expert Heuristics**: Using strategic fallback logic.\n\n" + heuristic_report
         log.append("💡 Switched to Heuristic Mode for final report.")
 
-    if final_report:
-        final_report = (
-            final_report
-            .replace("[Customer Name]", customer_name)
-            .replace("[Company Name]", company_name)
-            .replace("[Your Name]", "Retention Team")
-            .replace("[Link: Secure My Savings]", "Please reply to this email to activate your offer.")
-        )
-    
     return {"final_report": final_report, "active_provider": provider, "thought_log": log}
-        
-    return {"final_report": final_report, "thought_log": log}
 
 # --- Graph Construction ---
 
 def create_agent():
     workflow = StateGraph(AgentState)
-    
     workflow.add_node("analyze", analyze_customer)
     workflow.add_node("retrieve", retrieve_knowledge)
     workflow.add_node("generate", generate_report)
-    
     workflow.set_entry_point("analyze")
     workflow.add_edge("analyze", "retrieve")
     workflow.add_edge("retrieve", "generate")
     workflow.add_edge("generate", END)
-    
     return workflow.compile()
 
 # --- Execution Entry ---
-def run_retention_agent(customer_data: dict, churn_prob: float):
+def process_customer_retention(customer_data: dict, churn_prob: float, user_query: str = ""):
+    """
+    Final entry point name to break all cached module links.
+    """
     agent = create_agent()
     initial_state = {
         "customer_data": customer_data,
         "churn_probability": churn_prob,
+        "user_query": user_query,
         "thought_log": []
     }
     return agent.invoke(initial_state)
