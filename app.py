@@ -729,8 +729,8 @@ elif selected == "Churn Prediction":
         fig3.add_trace(go.Bar(name="Dataset Average", x=metrics, y=avg_vals,
                               marker_color="#1e293b",
                               text=[f"{v:,.1f}" for v in avg_vals], textposition="outside"))
-        apply_layout(fig3, height=320, barmode="group", bargap=0.3,
-                     textfont=dict(color="#e2e8f0", size=12))
+        fig3.update_traces(textfont=dict(color="#e2e8f0", size=12))
+        apply_layout(fig3, height=320, barmode="group", bargap=0.3)
         st.plotly_chart(fig3, width='stretch')
 
         st.divider()
