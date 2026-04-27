@@ -11,7 +11,13 @@ pinned: false
 
 ## From Predictive Analytics to Strategic Intervention
 
+[![Live Demo](https://img.shields.io/badge/Hugging%20Face-Space-FFD21E?logo=huggingface&logoColor=white)](https://huggingface.co/spaces/Manku69/slip-churn-intelligence)
+
 **Slip** is a production-grade churn intelligence platform. It bridges the gap between historical data analysis and real-world customer retention by combining classical Machine Learning with modern Agentic AI reasoning.
+
+### 🌐 Live Experience
+You can access the hosted version of the platform directly on Hugging Face Spaces:
+👉 **[Slip Churn Command Center](https://huggingface.co/spaces/Manku69/slip-churn-intelligence)**
 
 ### Project Vision
 Customer churn is more than just a lost subscription; it’s a disruption in growth. This project tackles the churn problem in two distinct phases:
@@ -57,6 +63,24 @@ streamlit run app.py
 - **[Presentation Script](docs/PRESENTATION_GUIDE.md)**: A visual guide for the Milestone 2 presentation.
 
 ---
+
+### ☁️ Hugging Face Deployment & Usage
+
+Slip is optimized for deployment on Hugging Face Spaces using Docker.
+
+#### Cloning from Hugging Face
+To clone the source code directly from the Hugging Face Space:
+```bash
+# Note: You will need Git LFS installed to pull the model artifacts
+git clone https://huggingface.co/spaces/Manku69/slip-churn-intelligence
+cd slip-churn-intelligence
+git lfs pull
+```
+
+#### Deployment Notes
+- **SDK**: Docker (Debian Slim)
+- **Large Files**: Managed via **Git LFS** (tracking `.pkl` and `.csv` files).
+- **Environment Secrets**: Requires `GOOGLE_API_KEY`, `GROQ_API_KEY`, and `MISTRAL_API_KEY` to be set in the Space settings.
 
 ### Team & Development
 Built by the **Slip** core team. Visit our **[Contributors Guide](docs/CONTRIBUTORS.md)** to see the faces behind the code.

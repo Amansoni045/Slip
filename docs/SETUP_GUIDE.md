@@ -28,11 +28,20 @@ Before you begin, ensure you have the following installed:
 - **API Keys**: To use the "AI Strategist" features, you'll need a **Google Gemini**, **Groq**, or **Mistral** API key in your `.env` file.
 
 ### Step 1: Clone the Project
-Open your terminal and clone the repository to your local workspace:
+You can clone the project from either GitHub or directly from the Hugging Face Space.
 
+#### Option A: From GitHub (Primary)
 ```bash
-git clone https://github.com/Amansoni045/GEN_AI_MID_TERM.git
+git clone https://github.com/MAYANKSHARMA01010/Slip.git
 cd Slip
+```
+
+#### Option B: From Hugging Face (Mirror)
+*Note: This requires [Git LFS](https://git-lfs.github.com/) to be installed on your machine.*
+```bash
+git clone https://huggingface.co/spaces/Manku69/slip-churn-intelligence
+cd slip-churn-intelligence
+git lfs pull
 ```
 
 ### Step 2: Initialize the Virtual Environment

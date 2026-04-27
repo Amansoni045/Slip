@@ -33,6 +33,17 @@
 
 ---
 
+## Cloud Infrastructure & Deployment
+**[Hugging Face Spaces](https://huggingface.co/spaces)**
+- **Role**: Hosts the live version of the Slip Platform.
+- **Why**: Provides a seamless ecosystem for hosting ML-centric applications and manages the hardware lifecycle automatically.
+
+**[Docker](https://www.docker.com/)**
+- **Role**: Containerizes the application for consistent behavior across development and production environments.
+- **Why**: The `Dockerfile` ensures that the Debian-slim environment, Python version, and system dependencies are identical regardless of the hosting provider.
+
+---
+
 ## Data & Serialization
 **[Pandas](https://pandas.pydata.org/) & [NumPy](https://numpy.org/)**
 - **Role**: The backbone of our data management. Pandas handles the tabular CSV records, while NumPy performs the efficient matrix operations required for inference.
