@@ -1,3 +1,12 @@
+---
+title: Slip - Churn Intelligence Platform
+emoji: 📉
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # Slip — Churn Intelligence Platform
 
 ## From Predictive Analytics to Strategic Intervention
