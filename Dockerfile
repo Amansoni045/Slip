@@ -4,11 +4,10 @@ FROM python:3.11-slim
 # Set the working directory
 WORKDIR /app
 
-# Install system dependencies (needed for some ML libraries)
+# Install only the necessary system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
-    software-properties-common \
     git \
     && rm -rf /var/lib/apt/lists/*
 
@@ -16,12 +15,12 @@ RUN apt-get update && apt-get install -y \
 COPY . .
 
 # Install Python dependencies
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Expose the port Streamlit runs on (default 8501)
+# Expose the port Streamlit runs on
 EXPOSE 8501
 
-# Healthcheck to make sure the app is running
+# Healthcheck
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
 # Command to run the app
