@@ -12,12 +12,14 @@ pinned: false
 ## From Predictive Analytics to Strategic Intervention
 
 [![Live Demo](https://img.shields.io/badge/Hugging%20Face-Space-FFD21E?logo=huggingface&logoColor=white)](https://huggingface.co/spaces/Manku69/slip-churn-intelligence)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://slip-ai.streamlit.app/)
 
 **Slip** is a production-grade churn intelligence platform. It bridges the gap between historical data analysis and real-world customer retention by combining classical Machine Learning with modern Agentic AI reasoning.
 
 ### 🌐 Live Experience
-You can access the hosted version of the platform directly on Hugging Face Spaces:
-👉 **[Slip Churn Command Center](https://huggingface.co/spaces/Manku69/slip-churn-intelligence)**
+You can access the hosted version of the platform directly:
+- **Hugging Face (Primary)**: [Slip Churn Command Center](https://huggingface.co/spaces/Manku69/slip-churn-intelligence)
+- **Streamlit Cloud (Mirror)**: [slip-ai.streamlit.app](https://slip-ai.streamlit.app/)
 
 ### Project Vision
 Customer churn is more than just a lost subscription; it’s a disruption in growth. This project tackles the churn problem in two distinct phases:
