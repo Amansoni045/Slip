@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+pydantic
+pandas
+numpy
+scikit-learn
+joblib
+langgraph
+langchain
+langchain-google-genai
+langchain-community
+langchain-groq
+langchain-mistralai
+faiss-cpu
+sentence-transformers
+langchain-huggingface
+python-dotenv
