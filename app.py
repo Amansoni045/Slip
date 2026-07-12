@@ -383,7 +383,7 @@ def load_artifacts():
             pipeline = joblib.load("model_pipeline.pkl")
             feature_columns = joblib.load("feature_columns.pkl")
             return pipeline, feature_columns
-        except (EOFError, FileNotFoundError, pickle.UnpicklingError):
+        except Exception:
             train_and_save_artifacts()
     st.error("Failed to load or train model artifacts. Please check your data and code.")
     st.stop()
